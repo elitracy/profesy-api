@@ -22,7 +22,11 @@ mongoUtil.connectToServer((err, client) => {
   const profs = mongoUtil.getDb().collection("professors");
   const users = mongoUtil.getDb().collection("Users");
 
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(
+    bodyParser.urlencoded({
+      extended: true,
+    })
+  );
 
   // SEARCH PROFESSORS
   app.get("/professors", function (req, res) {
@@ -30,11 +34,15 @@ mongoUtil.connectToServer((err, client) => {
     const regex = new RegExp(escapeRegex(name), "gi");
 
     profs
-      .find({ name: regex })
+      .find({
+        name: regex,
+      })
       .limit(SEARCH_LIMIT)
       .toArray((err, results) => {
         if (err) console.error(err);
-        res.send({ professors: results });
+        res.send({
+          professors: results,
+        });
       });
   });
 
@@ -47,12 +55,17 @@ mongoUtil.connectToServer((err, client) => {
   app.get("/login", (req, res) => {
     let user = req.query.username;
     let pw = req.query.password;
-    users.findOne({ username: user }, (err, results) => {
-      res.send({
-        message: results,
-        loggedIn: results !== null && results.password === pw,
-      });
-    });
+    users.findOne(
+      {
+        username: user,
+      },
+      (err, results) => {
+        res.send({
+          message: results,
+          loggedIn: results !== null && results.password === pw,
+        });
+      }
+    );
   });
 
   // CREATE USER (SIGNUP)
@@ -74,7 +87,16 @@ mongoUtil.connectToServer((err, client) => {
 
     // see if user exists
     users.findOne(
-      { $or: [{ username: user }, { email: email }] },
+      {
+        $or: [
+          {
+            username: user,
+          },
+          {
+            email: email,
+          },
+        ],
+      },
       (err, results) => {
         if (results) {
           if (results.email === email) emailExists = true;
@@ -117,7 +139,9 @@ mongoUtil.connectToServer((err, client) => {
   app.get("/resetPass", (req, res) => {
     const emailAddress = req.query.email;
     const code = emailUtil.sendEmail(emailAddress);
-    res.send({ code: code });
+    res.send({
+      code: code,
+    });
   });
 
   // CHANGE USER PASSWORD (NOT IMPLEMENTED)
@@ -126,11 +150,23 @@ mongoUtil.connectToServer((err, client) => {
     const password = req.query.password;
 
     users.updateOne(
-      { username: username },
-      { $set: { password: password } },
+      {
+        username: username,
+      },
+      {
+        $set: {
+          password: password,
+        },
+      },
       (err, data) => {
-        if (err) res.send({ message: "error" });
-        else res.send({ message: "Password successfully updated!" });
+        if (err)
+          res.send({
+            message: "error",
+          });
+        else
+          res.send({
+            message: "Password successfully updated!",
+          });
       }
     );
   });
@@ -141,8 +177,16 @@ mongoUtil.connectToServer((err, client) => {
 
     profs
       .aggregate([
-        { $unwind: "$courses" },
-        { $match: { "courses.course": { $in: [course] } } },
+        {
+          $unwind: "$courses",
+        },
+        {
+          $match: {
+            "courses.course": {
+              $in: [course],
+            },
+          },
+        },
         {
           $group: {
             _id: {
@@ -151,11 +195,18 @@ mongoUtil.connectToServer((err, client) => {
             },
           },
         },
-        { $sort: { "_id.gpa": -1 } },
+        {
+          $sort: {
+            "_id.gpa": -1,
+          },
+        },
       ])
       .toArray((err, results) => {
         if (err) console.error(err);
-        else res.send({ courses: results });
+        else
+          res.send({
+            courses: results,
+          });
       });
   });
 
@@ -166,7 +217,9 @@ mongoUtil.connectToServer((err, client) => {
 
     profs
       .aggregate([
-        { $unwind: "$courses" },
+        {
+          $unwind: "$courses",
+        },
         {
           $match: {
             "courses.course": {
@@ -174,13 +227,25 @@ mongoUtil.connectToServer((err, client) => {
             },
           },
         },
-        { $group: { _id: null, courseList: { $addToSet: "$courses.course" } } },
+        {
+          $group: {
+            _id: null,
+            courseList: {
+              $addToSet: "$courses.course",
+            },
+          },
+        },
       ])
       .toArray((err, results) => {
         if (err) console.error(err);
         else if (results.length > 0)
-          res.send({ message: results[0].courseList });
-        else res.send({ message: [] });
+          res.send({
+            message: results[0].courseList,
+          });
+        else
+          res.send({
+            message: [],
+          });
       });
   });
 
@@ -190,11 +255,23 @@ mongoUtil.connectToServer((err, client) => {
 
     profs.findOne(
       {
-        $and: [{ name: prof }, { "courses.course": { $in: [course] } }],
+        $and: [
+          {
+            name: prof,
+          },
+          {
+            "courses.course": {
+              $in: [course],
+            },
+          },
+        ],
       },
       (err, result) => {
         if (err) console.error(err);
-        else res.send({ message: result });
+        else
+          res.send({
+            message: result,
+          });
       }
     );
   });
