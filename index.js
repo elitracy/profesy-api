@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 8080;
 const mongoUtil = require("./connect");
 const bodyParser = require("body-parser");
 const emailUtil = require("./email");
-const { Db } = require("mongodb");
 
 const SEARCH_LIMIT = 10;
 
@@ -183,7 +182,6 @@ mongoUtil.connectToServer((err, client) => {
   // SEARCH FOR COURSES
   app.get("/courses", (req, res) => {
     const course = req.query.course;
-    // const regex = new RegExp(escapeRegex(course.toLowerCase()), "gi");
 
     profs
       .aggregate([
@@ -193,7 +191,7 @@ mongoUtil.connectToServer((err, client) => {
         {
           $match: {
             "courses.course": {
-              $in: [new RegExp(`${course.toUpperCase()}*`)],
+              $in: [new RegExp(`${course.toUpperCase()}`)],
             },
           },
         },
