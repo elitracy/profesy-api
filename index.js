@@ -182,7 +182,7 @@ mongoUtil.connectToServer((err, client) => {
   // SEARCH FOR COURSES
   app.get("/courses", (req, res) => {
     const course = req.query.course;
-    console.log(course);
+    const regex = new RegExp(escapeRegex(course.toUpperCase()), "gi");
 
     profs
       .aggregate([
@@ -192,7 +192,7 @@ mongoUtil.connectToServer((err, client) => {
         {
           $match: {
             "courses.course": {
-              $in: [new RegExp(`${course.toUpperCase()}*`)],
+              $in: [regex],
             },
           },
         },
@@ -205,11 +205,12 @@ mongoUtil.connectToServer((err, client) => {
           },
         },
       ])
+      .limit(SEARCH_LIMIT)
       .toArray((err, results) => {
         if (err) console.error(err);
         else if (results.length > 0)
           res.status(200).send({
-            message: results[0].courseList.splice(0, 20),
+            message: results[0].courseList,
           });
         else
           res.status(400).send({
@@ -245,9 +246,8 @@ mongoUtil.connectToServer((err, client) => {
     );
   });
 
-  app.get("/terms", (req, res) => {
+  app.get("/terms", (_req, res) => {
     res.sendFile(__dirname + "/termsOfService.html");
-    console.log(__dirname);
   });
 
   app.listen(PORT, () => {
