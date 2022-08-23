@@ -29,7 +29,7 @@ mongoUtil.connectToServer((err, client) => {
   );
 
   // SEARCH PROFESSORS
-  app.get("/professors", function (req, res) {
+  app.get("/professors", function(req, res) {
     let name = req.query.name;
     const regex = new RegExp(escapeRegex(name), "gi");
 
@@ -40,7 +40,7 @@ mongoUtil.connectToServer((err, client) => {
       .limit(SEARCH_LIMIT)
       .toArray((err, results) => {
         if (err) console.error(err);
-        res.send({
+        res.status(200).send({
           professors: results,
         });
       });
@@ -48,12 +48,12 @@ mongoUtil.connectToServer((err, client) => {
 
   // ROOT
   app.get("/", (req, res) => {
-    res.send("Hello from Profesy server!");
+    res.status(200).send("Hello from Profesy server!");
   });
 
   // INSERT FAVORITES INTO USER ARRAY
   app.put("/favorites", (req, res) => {
-    const newFavDict = {professor: req.query.professor, course: req.query.course, gpa: req.query.gpa};
+    const newFavDict = { professor: req.query.professor, course: req.query.course, gpa: req.query.gpa };
     users.findOneAndUpdate(
       {
         username: req.query.username
@@ -64,7 +64,7 @@ mongoUtil.connectToServer((err, client) => {
         }
       }
     );
-    res.send(newFavDict);
+    res.status(200).send({ message:});
   });
 
   // CHECK USER LOGIN
@@ -76,7 +76,7 @@ mongoUtil.connectToServer((err, client) => {
         username: user,
       },
       (err, results) => {
-        res.send({
+        res.status(200).send({
           message: results,
           loggedIn: results !== null && results.password === pw,
         });
@@ -263,7 +263,7 @@ mongoUtil.connectToServer((err, client) => {
   });
 
   app.get("/terms", (_req, res) => {
-    res.sendFile(__dirname + "/termsOfService.html");
+    res.status(200).sendFile(__dirname + "/termsOfService.html");
   });
 
   app.listen(PORT, () => {
