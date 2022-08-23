@@ -51,6 +51,22 @@ mongoUtil.connectToServer((err, client) => {
     res.send("Hello from Profesy server!");
   });
 
+  // INSERT FAVORITES INTO USER ARRAY
+  app.put("/favorites", (req, res) => {
+    const newFavDict = {professor: req.query.professor, course: req.query.course, gpa: req.query.gpa};
+    users.findOneAndUpdate(
+      {
+        username: req.query.username
+      },
+      {
+        $push: {
+          favProfs: newFavDict
+        }
+      }
+    );
+    res.send(newFavDict);
+  });
+
   // CHECK USER LOGIN
   app.get("/login", (req, res) => {
     let user = req.query.username;
