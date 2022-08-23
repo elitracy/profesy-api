@@ -83,6 +83,23 @@ mongoUtil.connectToServer((err, client) => {
       );
   });
 
+  // DELETE A FAVORITE FROM A USER'S FAVPROFS ARRAY
+  app.delete("/favorites", (req, res) => {
+    const username = req.query.username;
+    const prof = req.query.professor;
+    const course = req.query.course;
+    const favToDelete = {professor: prof, course: course};
+    const query = {username: username};
+    const removeQuery = {
+      $pull: {
+        favProfs: favToDelete
+      }
+    }
+
+    users.findOneAndUpdate(query, removeQuery);
+    res.status(200).send({message: "Removal successful"});
+  })
+
   // CHECK USER LOGIN
   app.get("/login", (req, res) => {
     let user = req.query.username;
