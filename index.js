@@ -64,7 +64,23 @@ mongoUtil.connectToServer((err, client) => {
         }
       }
     );
-    res.send(newFavDict);
+    res.status(200).send({message: "Insert successful"});
+  });
+
+  // GET FAVORITES FROM USER FAVPROFS ARRAY
+  app.get("/favorites", (req, res) => {
+    const username = req.query.username;
+
+    users.findOne(
+        {
+          username: username
+        },
+        (err, results) => {
+          res.send({
+            favorites: results.favProfs
+          });
+        }
+      );
   });
 
   // CHECK USER LOGIN
