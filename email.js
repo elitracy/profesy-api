@@ -11,7 +11,7 @@ const generateId = (length) => {
 };
 
 module.exports = {
-  sendEmail: function (emailAddress) {
+  sendEmail: function(emailAddress) {
     const id = generateId(4);
 
     let transporter = nodemailer.createTransport({
@@ -29,10 +29,10 @@ module.exports = {
       text: "Your code is: " + id,
     };
 
-    transporter.sendMail(mailOptions, async function (error, info) {
+    transporter.sendMail(mailOptions, async function(error, info) {
       if (error) {
         console.log(error.response);
-        return { code: "email fail" };
+        return { code: "Email fail" };
       } else {
         console.log("Email sent: " + info.response);
         return { code: id };
