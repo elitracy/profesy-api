@@ -154,6 +154,7 @@ mongoUtil.connectToServer((err, client) => {
               email: email,
               name: name,
               favProfs: [],
+              history: {courses: [], professors: []}
             },
             (err, data) => {
               res.status(200).send({
